@@ -1,0 +1,67 @@
+﻿@using ECommerce.Data
+@model IEnumerable<Category>
+<h2>Admin Index</h2>
+<div class="well">
+    <h2>Welcome to the website's controller!!!</h2>
+
+</div>
+<div class="well">
+    <h2>Quick Add Category</h2>
+    <form action="/admin/addCategory" method="post">
+        <input class="form-control" placeholder="Category Name here" id="cat-name" name="name" />
+        <br />
+        <button class="btn btn-info" id="add-category">Add</button>
+        <div id="cat-added"></div>
+    </form>
+</div>
+<button class="btn btn-primary" id="add-prod">Add Product</button>
+<div id="product-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="/admin/addProduct" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Product</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label>Product Name</label>
+                            <input class="form-control input" name="name" id="product-name" placeholder="Product Name" type="text">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Description</label>
+                            <textarea class="form-control input" name="description" id="description" placeholder="Type here"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <select id="category-select" name="categoryId" class="form-control category-select input">
+                                <option value="0">--Select A Category--</option>
+                                @foreach (Category c in Model)
+                                {
+                                    <option value="@c.Id">@c.Name</option>
+                                }
+                            </select>
+                            <label>Price</label>
+                            <input class="form-control input" name="price" id="price" placeholder="Price" type="text">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Select an Image</label>
+                            <input type="file" name="image" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="add-product" class="btn btn-primary">Add Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="/js/adminIndex.js"></script>
+}
+

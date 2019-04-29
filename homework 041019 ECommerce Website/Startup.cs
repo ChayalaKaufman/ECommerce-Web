@@ -17,18 +17,26 @@ namespace homework_041019_ECommerce_Website
         {
             Configuration = configuration;
         }
-
+        public const string CookieScheme = "YourSchemeName";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+            services.AddSession();
+
+            services.AddAuthentication(CookieScheme)
+                .AddCookie(CookieScheme, options =>
+                {
+                    options.AccessDeniedPath = "/account/denied";
+                    options.LoginPath = "/account/login";
+                });
+
+            //services.AddAuthentication().AddCookie(options =>
+            //{
+            //    options.AccessDeniedPath = "/account/denied";
+            //    options.LoginPath = "/account/login";
+            //});
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -47,8 +55,8 @@ namespace homework_041019_ECommerce_Website
             }
 
             app.UseStaticFiles();
-            app.UseCookiePolicy();
-
+            app.UseSession();
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

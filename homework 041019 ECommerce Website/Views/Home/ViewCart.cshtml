@@ -1,0 +1,60 @@
+﻿@using homework_041019_ECommerce_Website.Models
+@using ECommerce.Data
+@model CartViewModel
+<h2>Shopping Cart</h2>
+@if (Model.Message != null)
+{
+    <h2>@Model.Message</h2>
+}
+else
+{
+    <button class="btn btn-primary" id="checkout">Checkout</button>
+    <br />
+    <br />
+    <div class="container original">
+        <div class="container cart">
+
+            @foreach (CartProduct p in Model.CartProducts)
+            {
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="col-sm-4 col-lg-4 col-md-4">
+                            <div class="thumbnail">
+                                <img src="/images/uploads/@p.Product.Image" style="width: 800px;" alt="">
+                                <div class="caption">
+                                    <h4 class="pull-right">@p.Product.Price.ToString("C")</h4>
+                                    <h4>
+                                        <a href="/home/viewProduct?id=@p.Product.Id">@p.Product.Name</a>
+                                    </h4>
+                                    <h4>quantity: @p.Quantity</h4>
+                                    <h4>select new quantity</h4>
+                                    <select id="quantity" data-product-id="@p.Product.Id" name="quantity">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+                                <h4>Total:@((p.Quantity * p.Product.Price).ToString("C"))</h4>
+                                <button class="btn-link remove" data-product-id="@p.Product.Id">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+}
+
+@section scripts{ 
+    <script src="/js/viewCart.js"></script>
+}
+
+

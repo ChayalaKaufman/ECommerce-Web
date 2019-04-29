@@ -3,41 +3,128 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using homework_041019_ECommerce_Website.Models;
+using ECommerce.Data;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace homework_041019_ECommerce_Website.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private IHostingEnvironment _environment;
+        private string _connectionString;
+
+        public HomeController(IHostingEnvironment environment,
+            IConfiguration configuration)
         {
-            return View();
+            _environment = environment;
+            _connectionString = configuration.GetConnectionString("ConStr");
+        }
+        public IActionResult Index(int id)
+        {
+            ClientDb clientDb = new ClientDb(_connectionString);
+
+            HomePageViewModel vm = new HomePageViewModel();
+            if (id != 0)
+            {
+                vm.Products = clientDb.GetProductsForCategory(id);
+            }
+            else
+            {
+                vm.Products = clientDb.GetProductsForCategory(0);
+            }
+
+            vm.Categories = clientDb.GetCategories();
+            return View(vm);
         }
 
-        public IActionResult About()
+        public IActionResult ViewProduct(int id)
         {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
+            ClientDb db = new ClientDb(_connectionString);
+            ProductViewModel vm = new ProductViewModel();
+            vm.Product = db.GetProduct(id);
+            vm.Categories = db.GetCategories();
+            return View(vm);
+        }
+        
+        [Authorize]
+        [HttpPost]
+        public IActionResult AddToCart(int productId, int quantity)
+        {
+            ClientDb db = new ClientDb(_connectionString);
+            int? cart = HttpContext.Session.GetInt32("Cart");
+            if (cart == null)
+            {
+                cart = db.CreateCart();
+                HttpContext.Session.SetInt32("Cart", cart.Value);
+            }
+            db.AddToCart(productId, cart.Value, quantity);
+            Product p = db.GetProduct(productId);
+            return Json(p);
         }
 
-        public IActionResult Contact()
+        [Authorize]
+        public IActionResult ViewCart()
         {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
+            CartViewModel vm = new CartViewModel();
+            ClientDb db = new ClientDb(_connectionString);
+            int? cart = HttpContext.Session.GetInt32("Cart");
+            if (cart == null)
+            {
+                vm.Message = "Your cart is empty";
+                return View(vm);
+            }
+            vm.Customer = db.GetByEmail(User.Identity.Name);
+            vm.CartProducts = db.GetCartProducts(cart.Value);
+            return View(vm);
         }
 
-        public IActionResult Privacy()
+        [HttpPost]
+        public IActionResult RemoveFromCart(int productId)
         {
-            return View();
+            int cartId = HttpContext.Session.GetInt32("Cart").Value;
+            ClientDb db = new ClientDb(_connectionString);
+            db.RemoveFromCart(cartId, productId);
+            return Json(productId);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public IActionResult EditCart(int quantity, int productId)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            int cartId = HttpContext.Session.GetInt32("Cart").Value;
+            ClientDb db = new ClientDb(_connectionString);
+            db.EditCart(cartId, productId, quantity);
+            return Json(quantity);
+        }
+
+        public IActionResult GetCartAjax()
+        {
+            int cartId = HttpContext.Session.GetInt32("Cart").Value;
+            ClientDb db = new ClientDb(_connectionString);
+            List<CartProduct> cartProducts = db.GetCartProducts(cartId);
+            return Json(cartProducts);
+        }
+    }
+
+    public static class SessionExtensions
+    {
+        public static void Set<T>(this ISession session, string key, T value)
+        {
+            session.SetString(key, JsonConvert.SerializeObject(value));
+        }
+
+        public static T Get<T>(this ISession session, string key)
+        {
+            string value = session.GetString(key);
+
+            return value == null ? default(T) :
+                JsonConvert.DeserializeObject<T>(value);
         }
     }
 }
