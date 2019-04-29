@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\images\uploads\5eb386d2-6eb8-4d85-af66-f317c54e8ddb.jpg" />
+    <Content Remove="wwwroot\images\uploads\735b5fad-70b5-4e40-bf61-7c60452817bd.jpeg" />
+    <Content Remove="wwwroot\images\uploads\bfe8d0e5-c3d1-4c5d-9e7a-fa0b20bba35e.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />

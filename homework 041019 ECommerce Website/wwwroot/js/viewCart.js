@@ -44,7 +44,6 @@
                 </div>
             </div>`);
             });
-
         });
     }
 
@@ -55,6 +54,5 @@
             clearCartAndPopulate();
         });
     })
-
 
 })

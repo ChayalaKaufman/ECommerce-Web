@@ -53,7 +53,6 @@ namespace homework_041019_ECommerce_Website.Controllers
             return View(vm);
         }
         
-        [Authorize]
         [HttpPost]
         public IActionResult AddToCart(int productId, int quantity)
         {
