@@ -28,17 +28,11 @@ else
                                     </h4>
                                     <h4>quantity: @p.Quantity</h4>
                                     <h4>select new quantity</h4>
-                                    <select id="quantity" data-product-id="@p.Product.Id" name="quantity">
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
+                                    <select data-product-id="@p.Product.Id" name="quantity" class="quantity">
+                                        @for (int i = 1; i <= 10; i++)
+                                        {
+                                            <option  value="@i">@i</option>
+                                        }
                                     </select>
                                 </div>
                                 <h4>Total:@((p.Quantity * p.Product.Price).ToString("C"))</h4>

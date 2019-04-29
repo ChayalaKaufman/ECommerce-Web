@@ -1,8 +1,8 @@
 ﻿$(() => {
 
-    $("#quantity").on('change', function () {
-        const quantity = $("#quantity option:selected").val();
-        const productId = $("#quantity").data('product-id');
+    $(".original").on('change', '.quantity', function () {
+        const quantity = $(this).val();
+        const productId = $(this).data('product-id');
 
         $.post('/home/editCart', { quantity, productId }, function () {
             clearCartAndPopulate();
@@ -24,7 +24,7 @@
                                 <h4><a href="/home/viewProduct?id=${p.product.id}">${p.product.name}</a></h4>
                                 <h4>quantity: ${p.quantity}</h4>
                                     <h4>select new quantity</h4>
-                                    <select id="quantity" data-product-id="${p.product.id}" name="quantity">
+                                    <select data-product-id="${p.product.id}" name="quantity" class="quantity">
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -37,7 +37,7 @@
                                         <option value="10">10</option>
                                     </select>
                             </div>
-                            <h4>Total:${((p.quantity * p.product.price).ToString("C"))}</h4>
+                            <h4>Total:${(p.quantity * p.product.price)}</h4>
                             <button class="btn-link remove" data-product-id="${p.product.id}">Remove</button>
                         </div>
                     </div>
